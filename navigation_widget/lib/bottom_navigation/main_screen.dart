@@ -21,7 +21,7 @@ class _MainScreenState extends State<MainScreen> {
   void _onTab(int index) {
     print("화면을 이동합니다, ${index}");
     // ⭐ setState()
-    // : StatefulWidget 에서 변겨된 state 를 반영하여 UI 를 업데이트하는 함수
+    // : StatefulWidget 에서 변경된 state 를 반영하여 UI 를 업데이트하는 함수
     setState(() {
       _selectedIndex = index;
       switch(index) {
