@@ -25,6 +25,12 @@ class _ListScreenState extends State<ListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("게시글 목록")),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushReplacementNamed(context, "/board/create");
+        },
+        child: const Icon(Icons.create),
+      ),
       body: 
         Container(
           padding: const EdgeInsets.fromLTRB(5, 0, 5, 10),

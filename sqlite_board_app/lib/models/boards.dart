@@ -24,8 +24,8 @@ class Boards {
   //  } 
   // )
   Boards( 
-    this.no, 
     {
+      this.no,
       String? id,
       required this.title,
       required this.writer,
@@ -46,21 +46,21 @@ class Boards {
       'title': title,
       'writer': writer,
       'content': content,
-      'createdAt': createdAt?.toIso8601String(),
-      'updatedAt': updatedAt?.toIso8601String(),
+      'created_at': createdAt?.toIso8601String(),
+      'updated_at': updatedAt?.toIso8601String(),
     };
   }
 
   // 🎁 Map ➡ 📦 객체
   factory Boards.fromMap(Map<String, dynamic> map) {
     return Boards(
-      map['no'],
+      no: map['no'],
       id: map['id'],
       title: map['title'],
       writer: map['writer'],
       content: map['content'],
-      createdAt: map['createdAt'] != null ? DateTime.parse(map['createdAt']) : null,
-      updatedAt: map['updatedAt'] != null ? DateTime.parse(map['updatedAt']) : null,
+      createdAt: map['created_at'] != null ? DateTime.parse(map['created_at']) : null,
+      updatedAt: map['updated_at'] != null ? DateTime.parse(map['updated_at']) : null,
     );
   }
 
