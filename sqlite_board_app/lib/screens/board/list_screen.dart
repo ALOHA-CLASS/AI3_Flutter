@@ -14,6 +14,85 @@ class _ListScreenState extends State<ListScreen> {
   late Future<List<Map<String, dynamic>>> _boardList;
   final boardService = BoardService();
 
+  // 팝업메뉴 아이템 (수정하기, 삭제하기)
+  final List<PopupMenuEntry<String>> _popupMenuItems = [
+                                  const PopupMenuItem(
+                                    value: 'update',
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.edit, size: 16),
+                                        SizedBox(width: 8),
+                                        Text('수정하기'),
+                                      ],
+                                    ),
+                                  ),
+                                  const PopupMenuItem(
+                                    value: 'delete',
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.delete, size: 16),
+                                        SizedBox(width: 8),
+                                        Text('삭제하기'),
+                                      ],
+                                    ),
+                                  ),
+                                ];
+
+  // 선택된 팝업 메뉴에 대한 처리
+  void _selected(String value, String id) async {
+    switch (value) {
+      case 'update':
+        print('수정하기 클릭');
+        Navigator.pushReplacementNamed(context, "/board/update", arguments: id);
+        break;
+      case 'delete':
+        print('삭제하기 클릭');
+        // 삭제 확인 ➡ 삭제 처리
+        bool check = await _confirm();
+        if (check) {
+          int result = await boardService.delete(id!);
+          setState(() {
+            _boardList = boardService.list();
+          });
+        }
+        break;
+    }
+  }
+
+  // 삭제 확인
+  Future<bool> _confirm() async {
+    bool result = false;
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("삭제 확인"),
+          content: const Text("정말 삭제하시겠습니까?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: const Text("취소"),
+            ),
+            TextButton(
+              onPressed: () {
+                result = true;
+                Navigator.of(context).pop(true);
+              },
+              child: const Text("삭제"),
+            ),
+          ],
+        );
+      }
+    ).then((value) {
+      // [삭제], [취소]
+      result = value ?? false;
+    });
+    return result;
+  }
+
+
   @override
   void initState() {
     super.initState();
@@ -62,12 +141,32 @@ class _ListScreenState extends State<ListScreen> {
                     itemCount: boardData.length,
                     itemBuilder: (context, index) {
                       final board = Boards.fromMap(boardData[index]);
-                      return Card(
-                        child: ListTile(
-                            title: Text(board.title ?? ''),
-                            subtitle: Text(board.content ?? ''),
-                          ),
-                      );
+                      return 
+                        GestureDetector(
+                          onTap: () {
+                            // 게시글 조회 화면으로 이동
+                            Navigator.pushReplacementNamed(
+                              context, "/board/detail", 
+                              arguments: board.id
+                            );
+                          },
+                          child: Card(
+                            child: ListTile(
+                                leading: Text(board.no.toString()),
+                                title: Text(board.title ?? ''),
+                                subtitle: Text(board.writer ?? ''),
+                                trailing: PopupMenuButton(
+                                  itemBuilder: (BuildContext context) {
+                                    return _popupMenuItems;
+                                  },
+                                  // 팝업 메뉴 선택 시, 이벤트
+                                  onSelected: (String value) {
+                                    _selected(value, board.id!);
+                                  }
+                                ),
+                              ),
+                            )
+                        );
                     }
                   );
                 }
